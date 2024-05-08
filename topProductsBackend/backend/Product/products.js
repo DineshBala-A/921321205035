@@ -3,6 +3,8 @@ const app=express();
 // const fetch=require("node-fetch");
 const router=express.Router();
 
+let products=[];
+
 const fetch = (...args) =>import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const merge = (n,rs1,rs2,rs3,rs4,rs5) => {
@@ -56,7 +58,7 @@ const fetchData = async (url,category) => {
         const response = await fetch(url, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNYXBDbGFpbXMiOnsiZXhwIjoxNzE1MTY5Mjg2LCJpYXQiOjE3MTUxNjg5ODYsImlzcyI6IkFmZm9yZG1lZCIsImp0aSI6ImM2MTgyZGNkLThhOWQtNDU1Ny1hNDBiLTAyYWQ3MzUyNzM0NyIsInN1YiI6ImRpbmVzaGJhbGFuYTIxaXRAcHNuYWNldC5lZHUuaW4ifSwiY29tcGFueU5hbWUiOiJQU05BIENFVCIsImNsaWVudElEIjoiYzYxODJkY2QtOGE5ZC00NTU3LWE0MGItMDJhZDczNTI3MzQ3IiwiY2xpZW50U2VjcmV0IjoiTUx2bEF6c2pmd09XWnJCSiIsIm93bmVyTmFtZSI6IkRpbmVzaCBCYWxhLk4uQSIsIm93bmVyRW1haWwiOiJkaW5lc2hiYWxhbmEyMWl0QHBzbmFjZXQuZWR1LmluIiwicm9sbE5vIjoiOTIxMzIxMjA1MDM1In0.dCZxHjdnCqq1tEDpcktJt6R_gKkxsbVh3W_kSEE-dDw'
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNYXBDbGFpbXMiOnsiZXhwIjoxNzE1MTY5ODEyLCJpYXQiOjE3MTUxNjk1MTIsImlzcyI6IkFmZm9yZG1lZCIsImp0aSI6ImM2MTgyZGNkLThhOWQtNDU1Ny1hNDBiLTAyYWQ3MzUyNzM0NyIsInN1YiI6ImRpbmVzaGJhbGFuYTIxaXRAcHNuYWNldC5lZHUuaW4ifSwiY29tcGFueU5hbWUiOiJQU05BIENFVCIsImNsaWVudElEIjoiYzYxODJkY2QtOGE5ZC00NTU3LWE0MGItMDJhZDczNTI3MzQ3IiwiY2xpZW50U2VjcmV0IjoiTUx2bEF6c2pmd09XWnJCSiIsIm93bmVyTmFtZSI6IkRpbmVzaCBCYWxhLk4uQSIsIm93bmVyRW1haWwiOiJkaW5lc2hiYWxhbmEyMWl0QHBzbmFjZXQuZWR1LmluIiwicm9sbE5vIjoiOTIxMzIxMjA1MDM1In0.29eGJf4QiSSvtrRWABik-BRH8jYZBqDbvPQZyjYpo-w'
             },
             method: "GET",
         });
@@ -88,9 +90,22 @@ router.get("/:categoryname/products",async(req,res)=>{
     const result5=await fetchData("http://20.244.56.144/test/companies/AZO/categories/Laptop/products?top=10&minPrice=1&maxPrice=10000",category);
     // console.error("RESULT ",result);
     const result=merge(n,result1,result2,result3,result4,result5);
-
+    products=result;
+    console.log("PRODUCTS ",products);
     res.status(200).json({"products":result}); 
 
+})
+
+router.get("/:categoryname/products/:productid",async(req,res)=>{
+    const productid=req.params.productid;
+    let flag=false;
+    products.forEach(obj=>{
+        if(obj.id==productid){
+            flag=true;
+            res.status(200).json({"product_details":obj});
+        }
+    })
+    res.status(201).json({"message":"no product found with the specified id"});
 })
 
 module.exports=router;
